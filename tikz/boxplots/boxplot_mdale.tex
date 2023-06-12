@@ -1,0 +1,36 @@
+\documentclass[tikz]{standalone}
+\usepackage{pgfplots}
+\usepackage{../tikzset}
+\pgfplotsset{compat=newest}
+% \usepackage{tikzdefs}
+\usepgfplotslibrary{statistics} %%
+\usetikzlibrary{calc}%%
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{axis}[
+    name=ale,
+    BoxplotStyle,
+    % width = 30mm,
+    % height = 40mm,
+    xtick = {1,2,3,4},
+    xticklabels = {Constant,Eleveld,Symbreg,Individual},
+    ylabel = {MdALE},
+    % boxplot/box extend=0.4 % <-- added
+    ]
+
+    \addplot [boxplot={draw position = 1}, color = black, fill = black!10, line width = .75, mark=*, mark options = {black, solid, scale=0.3}] table[y index = 0, col sep = comma] {"../csv_optim/MdALE_population_eleveld.csv"}; % first column, population
+
+    \addplot [boxplot={draw position = 2}, color = black, fill = black!10, line width = .75, mark=*, mark options = {black, solid, scale=0.3}] table[y index = 1, col sep = comma] {"../csv_optim/MdALE_population_eleveld.csv"}; % second column, eleveld
+
+    \addplot [boxplot={draw position = 3}, color = black, line width = .75, fill = black!10, mark=*, mark options = {black, solid, scale=0.3}] table[y index = 0, col sep = comma] {"../csv/MdALE_symbreg_eleveld.csv"}; % first column, symbolic regression
+
+    \addplot [boxplot={draw position = 4}, color = black, fill = black!10, line width = .75, mark=*, mark options = {black, solid, scale=0.3}] table[y index = 0, col sep = comma] {"../csv_optim/MdALE_individual_eleveld.csv"}; % first column, individual
+
+  \end{axis}
+
+\end{tikzpicture}
+\end{document}
+
+
+

@@ -1,0 +1,145 @@
+\documentclass[border=3mm,tikz]{standalone}
+\usepackage{tikzdefs}
+\usepackage{bm}
+
+\begin{document}
+\begin{tikzpicture}[scale=0.3,node distance = 3mm and 22mm]
+
+\begin{scope} % Covariate model
+    \tikzstyle{box}=[rectangle,rounded corners, minimum size=13mm,line width=0.4pt,fill=black!10, draw=none] % Covariate model box
+    \node[box,draw,fill=black!10] (adc)  {\scriptsize \parbox{16mm}{\centering{Covariate\\model\\$\bm{\theta}=\bm{f}(\bm{\varphi})$}}};
+    \coordinate[left = 10mm of adc.west]   (a1); % Mark input to box
+    \draw[-latex, line width=1.0pt]  (a1) node[above,xshift=5mm] {\footnotesize $\bm{\varphi}$} -- (a1-| adc.west);
+    \node[below left = 0.5mm and 0mm of adc.west]   (t1) {\scriptsize Covariates};
+\end{scope}
+
+\begin{scope} % Compartment model
+    \scriptsize
+    \tikzstyle{cpt} = [draw, rectangle, rounded corners, minimum width=6mm,node distance=12mm, minimum height=6mm,inner sep=1mm]
+    \node [cpt, right of=adc,xshift=12mm,yshift=-2mm] (cpt2) {$V_2$}; % Compartment 2
+    \node [cpt,right of=cpt2] (cpt1) {$V_1$}; % Compartment 1
+    \node [cpt, right of=cpt1] (cpt3) {$V_3$}; % Compartment 3
+    \node [yshift=3mm,above of=cpt1] (environment) {};
+    \node [xshift=12mm,yshift=7mm,above of=cpt2] (textcomp) {\scriptsize PK compartment model}; % text compartment model
+
+    % Transfer rates arrows
+    \draw [-latex] ([yshift=2mm]cpt1.west) -- node[midway,above] {$k_{12}$} ([yshift=2mm]cpt2.east);
+    \draw [-latex] ([yshift=-2mm]cpt2.east) -- node[midway,below] {$k_{21}$} ([yshift=-2mm]cpt1.west);
+    \draw [-latex] ([yshift=2mm]cpt3.west) -- node[midway,above] {$k_{31}$} ([yshift=2mm]cpt1.east);
+    \draw [-latex] ([yshift=-2mm]cpt1.east) -- node[midway,below] {$k_{13}$} ([yshift=-2mm]cpt3.west);
+    \draw [-latex] ([xshift=2mm]cpt1.north) -- node[above right] {$k_{10}$} ([xshift=2mm]environment.south);
+\end{scope}
+
+% Output plot y
+\begin{scope}[xshift=21cm,yshift=-20mm]
+    \begin{axis}[
+        name=plot_y,
+        width=0.7\axiswidth,
+        height=0.9\axisheight,
+        scale only axis,
+        y label style={at={(axis description cs:-0.1,.5)},anchor=south},
+        ylabel={$\textrm{C}_{\textrm{p}}$},
+        xlabel={$t$},
+        enlarge x limits=-1,
+        axis x line=bottom,
+        axis y line=left,
+        label style={font=\huge},
+        tick label style={font=\huge},
+        ticks=none,
+        axis line style = ultra thick,
+        xlabel style = {at={(axis description cs:1.1,0.1)},anchor=north east},
+        ylabel style = {at={(axis description cs:0,1)},anchor=south,rotate=-90},
+        ]
+
+       \addplot[mark=none,solid,black,line width=3pt] table [x index=0,y index=2,col sep=comma]{simdata.csv}; % y
+
+        % observations
+       %\addplot[mark=*,only marks,black,line width=5pt] table [x index=0,y index=2,col sep=comma]{simdata.csv}; % y
+        \addplot[mark=*,only marks,mark size=3pt] coordinates {
+        (0,0)
+        (100,2.4002)
+        (200, 45.435)
+        (300, 34.802)
+        (400,25.284)
+        (600,14.052)
+        (1000,5.1301)
+        (1100,6.3717)
+        %(1300,4.3633)
+        };
+
+      \end{axis}
+\end{scope}
+
+% Plot for input u
+\begin{scope}[xshift=-2.5cm,yshift=4cm]
+  \begin{axis}[
+      name=plot_u,
+      width=0.7\axiswidth,
+      height=0.9\axisheight,
+      scale only axis,
+      y label style={at={(axis description cs:-0.1,.5)},anchor=south},
+      ylabel={$u$},
+      xlabel={$t$},
+      enlarge x limits=-1,
+      axis x line=bottom,
+      axis y line=left,
+      label style={font=\huge},
+      tick label style={font=\huge},
+      ticks=none,
+      axis line style = ultra thick,
+      xlabel style = {at={(axis description cs:1.1,0.1)},anchor=north east},
+      ylabel style = {at={(axis description cs:0,1)},anchor=south,rotate=-90},
+      ]
+
+     \addplot[const plot, mark=none,solid,black,line width=3pt] table [x index=0,y index=1,col sep=comma]{simdata.csv};
+
+     % observations
+      \addplot[mark=*,only marks,mark size=3pt] coordinates {
+        (0,0.0)
+        (50,0.5)
+        (100,5.3)
+        (200,1.2)
+        (300,0.7)
+        (400,0.4)
+        (600,0.1)
+        (1000,0.3)
+        (1100,0.1)};
+
+    \end{axis}
+\end{scope}
+
+
+% Connect the scopes covariate model and compartment model
+\coordinate [xshift=-2mm,yshift=3mm,left of=cpt2] (leftcpt2); % to mark entry for pk params
+\draw [-latex, line width=1pt] (adc.east) -- node[midway,above] {\footnotesize \parbox{1.8cm}{ \centering{$\bm{\theta}$}}} ([yshift=-3mm]leftcpt2.west);  % arrow, pk model parameters
+% \node[above of=leftcpt2,xshift=-6mm, yshift=-12mm] (pkparams) {\scriptsize \parbox{1.8cm}{ \centering{PK\\parameters}}};
+\node[below left = 1.5mm and -5mm of leftcpt2.west]   (pkparams) {\scriptsize \parbox{1.8cm}{ \centering{PK\\params}}};
+
+% draw line from u to compartment model
+\coordinate[xshift=-2mm,yshift=4mm,left of=leftcpt2] (cu); % node for u
+\draw [-,line width = 0.5pt] ([xshift=6.5mm]plot_u.east) -| node[midway,above,xshift=2mm,yshift=-8mm] {\footnotesize $u$}  (cu); % line for u
+\draw [-latex,line width = 0.5pt] (cu) -| ([xshift=-2mm]cpt1.north); % line for u
+\node[above left = 1.5mm and -18mm of plot_u] (teztu)  {\scriptsize \parbox{1.8cm}{ \centering{Dose}}};
+
+% Connect compartment model to y plot
+\coordinate [xshift=2mm,yshift=1.2mm,right of=cpt3] (rightcpt3); % to mark start of arrow from comp model
+\draw [-latex,line width = 0.5pt] (rightcpt3) -- node[midway,above,yshift=0mm] {\scriptsize $\textrm{C}_{\textrm{pred}}$} ([xshift=-6.5mm]plot_y.west); % line for yhat
+\node[above left = 2.5mm and -18mm of plot_y] (texty)  {\scriptsize \parbox{1.8cm}{ \centering{Predicted\\concentration}}};
+
+
+% Background
+\begin{pgfonlayer}{background} 
+    \filldraw [rounded corners, line width=0.4pt,join=round,black!10,draw=black] % Compartment model
+      ([xshift=5mm,yshift=5mm]environment.north  -| cpt3.east)  rectangle ([xshift=-5mm,yshift=-5mm]cpt1.south  -| cpt2.west);
+
+      \filldraw [rounded corners, line width=0.4pt,join=round,black!10,draw=black]  % plot u
+      ([xshift=6mm,yshift=6mm]plot_u.north  -| plot_u.east)  rectangle ([xshift=-5mm,yshift=-5mm]plot_u.south  -| plot_u.west);
+
+      \filldraw [rounded corners, line width=0.4pt,join=round,black!10,draw=black]  % plot y
+      ([xshift=6mm,yshift=10mm]plot_y.north  -| plot_y.east)  rectangle ([xshift=-5mm,yshift=-5mm]plot_y.south  -| plot_y.west);
+  \end{pgfonlayer}
+
+
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,143 @@
+\documentclass[tikz, margin=2mm] {standalone}
+\usetikzlibrary{arrows.meta, % for edge arrows 
+               matrix,      % nodes will set as matrix elements
+               positioning,
+               calc,
+               }
+\usetikzlibrary{narrow}
+\usepackage{tikz-qtree}
+
+% Handle the yellow background
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+
+\begin{document}
+    \begin{tikzpicture}[
+           >=narrow, semithick,
+              plain/.style = {draw=none, fill=none, yshift=10mm,
+                text width=9ex,  align=center},% for text in images, 
+              ec/.style = {draw=none},% for emty cells
+               net/.style = {% for matrix style
+         matrix of nodes,
+          nodes={circle, draw, semithick, minimum size=5mm, inner sep=0mm},% circles in image
+       nodes in empty cells,% for not used cells in matrix
+       column sep = 4.5mm, % distance between columns in matrix 
+        row sep = -2mm  % distance between rows in matrix
+        },
+]
+\matrix[net] (m)% m is matrix name, it is used for names of cell: firs has name m-1-1
+                % in empty space between ampersands will show circles: 
+                % i.e.: nodes of the neural network
+{
+|[ec]| \hspace{8mm} &[-4mm] |[ec]| \hspace{5mm} \scriptsize{Layer 1} &[-8mm] |[plain]| &[-4mm] |[ec]| \hspace{5mm}\scriptsize{Layer 2} &[-8mm] |[plain]|  &[-5mm] |[ec]| \hspace{5mm}\scriptsize{Layer 3}  &[-8mm] |[plain]| \\ %
+       &        &        &         &        & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| &        & |[ec]|  &        & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| &        &        \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| &        & |[ec]|  &        & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+%|[ec]| & |[ec]| &[-8mm] |[ec]| & |[ec]|  &[-8mm] |[ec]| & |[ec]| \\
+%|[ec]| & |[ec]| &[-8mm] |[ec]| & |[ec]|  &[-8mm] |[ec]| & |[ec]| \\
+};
+% inputs
+\foreach \in [count=\ir from 1] in {2,4,6,8,10}
+\draw[black,<-] (m-\in-1.west) -- node[above] {\scriptsize{$\varphi_\ir$}} +(-7mm,0);
+\node[xshift=-6mm,yshift=0.8mm] at (m-1-1) {\scriptsize{Covariates}};
+
+% connections between nodes in the first and second layer
+% \node[text height=1.5mm] at (m-3-1) {\scriptsize{$x_1$}};
+% \node[text height=1.5mm] at (m-5-1) {\scriptsize{$x_2$}};
+% \node[text height=1.5mm] at (m-7-1) {\scriptsize{$x_3$}};
+% \node[text height=1.5mm] at (m-9-1) {\scriptsize{$x_4$}};
+
+\foreach \j in {2,4,6,8,10} % nodes from
+{
+\foreach \k in {2,4,6,8,10} \draw[black,-] (m-\j-1) -- (m-\k-2) ; % nodes to
+}
+
+\node[text height=1.5mm] at (m-2-2) {\scriptsize{$z_{11}$}};
+\node[text height=1.5mm] at (m-4-2) {\scriptsize{$z_{12}$}};
+\node[text height=1.5mm] at (m-6-2) {\scriptsize{$z_{13}$}};
+\node[text height=1.5mm] at (m-8-2) {\scriptsize{$z_{14}$}};
+\node[text height=1.5mm] at (m-10-2) {\scriptsize{$z_{15}$}};
+
+
+% connections between nodes in the second and third layer (function layer)
+\draw[black,-] (m-2-2) -- (m-2-3); % unit
+\node[text height=1.5mm] at (m-2-3) {\scriptsize{$g_{11}$}};
+\draw[black,-] (m-4-2) -- (m-5-3); % mult
+\node[text height=1.5mm] at (m-5-3) {\scriptsize{$g_{12}$}};
+\draw[black,-] (m-6-2) --  (m-5-3); % mult
+\draw[black,-] (m-8-2) --  (m-9-3); % pwr
+\draw[black,-] (m-10-2) --  (m-9-3); 
+\node[text height=1.5mm] at (m-9-3) {\scriptsize{$g_{13}$}};
+
+% connections between nodes in the third and fourth layer
+\foreach \j in {2,5,9}
+{
+\foreach \k in {2,4,6,8,10} \draw[black,-] (m-\j-3) -- (m-\k-4);
+}
+
+\node[text height=1.5mm] at (m-2-4) {\scriptsize{$z_{21}$}};
+\node[text height=1.5mm] at (m-4-4) {\scriptsize{$z_{22}$}};
+\node[text height=1.5mm] at (m-6-4) {\scriptsize{$z_{23}$}};
+\node[text height=1.5mm] at (m-8-4) {\scriptsize{$z_{24}$}};
+\node[text height=1.5mm] at (m-10-4) {\scriptsize{$z_{25}$}};
+
+
+% connections between nodes in the fourth and fifth layer (function layer)
+\draw[black,-] (m-2-4) -- (m-2-5); % unit
+\node[text height=1.5mm] at (m-2-5) {\scriptsize{$g_{21}$}};
+\draw[black,-] (m-4-4) -- (m-5-5); % mult
+\node[text height=1.5mm] at (m-5-5) {\scriptsize{$g_{22}$}};
+\draw[black,-] (m-6-4) --  (m-5-5); % mult
+\draw[black,-] (m-8-4) --  (m-9-5); % div
+\node[text height=1.5mm] at (m-9-5) {\scriptsize{$g_{23}$}};
+\draw[black,-] (m-10-4) -- (m-9-5); % div
+%\draw[black,-] (m-12-4) -- (m-11-5); % div
+%\node[] at (m-11-5) {\scriptsize{$\div$}};
+
+% connections between nodes in the fifth and last layer
+\foreach \j in {2,5,9}
+{
+\foreach \k in {6} \draw[black,-] (m-\j-5) -- (m-\k-6);
+}
+
+\node[text height=1.5mm] at (m-6-6) {\scriptsize{$z_{31}$}};
+\draw[black,-] (m-6-6) -- (m-6-7);
+\node[text height=1.5mm] at (m-6-7) {\scriptsize{$g_{31}$}};
+
+% output
+\draw[black,->] (m-6-7.east) -- node[above] {\scriptsize{$\theta_k$}} +(12mm,0);
+\node[xshift=11mm,yshift=-10mm] at (m-1-7) {\scriptsize \parbox{1.8cm}{ \centering{PK\\parameter}}};
+
+% Compute the coordinates for the background and the text above 
+% the background
+
+\coordinate(b1) at ($(m-10-3) + (4mm,-5mm)$);
+\coordinate(b2) at ($(m-1-2) + (-5mm,4mm)$);
+
+\coordinate(b3) at ($(m-10-5) + (4mm,-5mm)$);
+\coordinate(b4) at ($(m-1-4) + (-5mm,4mm)$);
+
+\coordinate(b5) at ($(m-10-7) + (3.5mm,-5mm)$);
+\coordinate(b6) at ($(m-1-6) + (-5mm,4mm)$);
+
+\begin{pgfonlayer}{background}
+  \draw[fill=gray!20,rounded corners, draw=black!50, line width=1pt]
+  (b1) rectangle(b2);
+  \draw[fill=gray!20,rounded corners, draw=black!50, line width=1pt]
+  (b3) rectangle(b4);
+  \draw[fill=gray!20,rounded corners, draw=black!50, line width=1pt]
+  (b5) rectangle(b6);
+\end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}

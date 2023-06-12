@@ -1,0 +1,58 @@
+\usepackage{pgfplots}
+\pgfplotsset{small,compat=1.16}
+\usepgfplotslibrary{statistics}
+\usetikzlibrary{external,shapes,arrows,narrow,arrows.meta,positioning}
+\usetikzlibrary{narrow}
+\usetikzlibrary{calc}
+\tikzset{>=narrow}
+\usetikzlibrary{backgrounds}
+
+
+\tikzifexternalizing{%
+    \newcommand{\hypersetup}[1]{}
+}{%
+    \usepackage{hyperref}
+}
+\hypersetup{hidelinks,bookmarksnumbered}
+\usepackage{xcolor}
+\definecolor{darkgreen}{rgb}{0,0.7,0}
+
+\usetikzlibrary{external}\tikzexternalize\tikzexternaldisable
+\newcommand*\tikzin[1]{%
+    \filename@parse{#1}
+    \tikzsetnextfilename{\filename@base}
+    \tikzexternalenable
+    \input{#1}
+    \tikzexternaldisable
+}
+\newlength\figurewidth\setlength{\figurewidth}{252pt}%
+% \newlength\axiswidth\setlength{\axiswidth}{\the\figurewidth}%
+% \addtolength{\axiswidth}{-50pt}%
+
+\pgfplotsset{height=30mm}
+\pgfplotsset{every axis legend/.append style={fill=none,draw=none}}
+
+\newlength\axiswidth\setlength{\axiswidth}{0.6\textwidth}
+\newlength\axisheight\setlength{\axisheight}{4cm}
+\newlength\axislowheight\setlength{\axislowheight}{2cm}
+
+\IfStandalone{\newcommand\figdir{.}\usepackage{newtxtext}}%
+             {\newcommand\figdir{figures}\tikzsetexternalprefix{build/}}
+
+\usepackage{newtxmath}
+\newcommand\fade{.2} % alpha value for thin lines
+\newcommand\thinwidth{0.5} % width of thin lines in plots
+\newcommand\fatwidth{1.5} % width of fat lines in plots
+
+% \pgfplotsset{height=30mm}
+% \pgfplotsset{every axis legend/.append style={fill=none,draw=none}}
+
+\definecolor{c0}{HTML}{1f77b4}
+\definecolor{c1}{HTML}{ff7f0e}
+\definecolor{c2}{HTML}{2ca02c}
+\definecolor{c3}{HTML}{d62728}
+
+% \newlength\axiswidth\setlength{\axiswidth}{0.6\textwidth}
+% \newlength\axisheight\setlength{\axisheight}{4cm}
+% \newlength\axislowheight\setlength{\axislowheight}{2cm}
+

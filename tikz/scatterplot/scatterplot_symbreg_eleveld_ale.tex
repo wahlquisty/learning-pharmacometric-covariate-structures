@@ -1,0 +1,88 @@
+% loglog scatter plot, symbolic regression with ALE + Eleveld predictions
+
+\documentclass[margin=0mm] {standalone} % use lualatex
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\usepackage{../tikzset}
+\pgfplotsset{compat=newest}
+
+% \usetikzlibrary{}
+% \usetikzlibrary{narrow}
+\usepackage{xcolor}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{loglogaxis}[
+    ScatterStyle,
+    xmin = 0.0005,
+    ymin= 0.0005,
+    xtick = {0.001, 0.01, 0.1, 1, 10},
+    ytick = {0.001, 0.01, 0.1, 1, 10},
+    legend pos = south east,
+    log ticks with fixed point,
+    x tick label style={/pgf/number format/1000 sep=\,},
+    ]
+
+% eleveld predictions
+
+\begin{scope}[blend mode=difference]
+
+\addlegendimage{mark=*,red,only marks,mark size=0.5pt}
+\addlegendimage{mark=*,Cerulean,only marks,mark size=0.5pt}
+
+%\begin{scope}[blend mode=lighten]
+%\begin{scope}[blend mode=screen]
+
+% symbolic regression
+%\begin{scope}[opacity=1.0,transparency group]
+\addplot[scatter,
+%color=blue!50,
+% color=Cerulean, %\color{OliveGreen},
+only marks,
+mark size = 0.5pt,
+mark = *, % mark options = {black},
+% opacity=0.5,
+%scatter/use mapped color={opacity=0.2,blue, draw opacity=0},
+scatter/use mapped color={opacity = 1.0, fill = red, draw opacity=0},
+] table[x index = 1,y index = 0,col sep=comma,each nth point=1]{../csv/predicted_observed_conc.csv};
+
+\addlegendentry{\scriptsize{Symreg}}
+%\end{scope}
+
+
+%\begin{scope}[opacity=1.0,transparency group]
+\addplot[scatter,
+%color=black!50,
+%color=red!50,
+% color=red,
+only marks,
+mark size = 0.5pt,
+mark = *, % mark options = {black},
+% opacity=0.5,
+% scatter/use mapped color={opacity = 0.4, fill = black, draw opacity=0},
+scatter/use mapped color={opacity = 1.0, fill = Cerulean, draw opacity=0},
+] table[x index = 2,y index = 0,col sep=comma,each nth point=1]{../csv/predicted_observed_conc.csv};
+%\end{scope}
+
+\addlegendentry{\scriptsize{Eleveld}}
+
+\end{scope}
+
+
+%\addlegendentry{Training data};
+\addplot[
+    solid,
+    domain=0.0001:100, 
+    % samples=100, 
+    color=black,
+    line width = 1pt,
+]{x};
+
+\end{loglogaxis}
+\end{tikzpicture}
+
+\end{document}

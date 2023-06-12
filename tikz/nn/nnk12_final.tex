@@ -1,0 +1,140 @@
+\documentclass[tikz, margin=2mm] {standalone}
+\usetikzlibrary{arrows.meta, % for edge arrows 
+               matrix,      % nodes will set as matrix elements
+               positioning,
+               calc,
+               }
+\usetikzlibrary{narrow}
+\usepackage{tikz-qtree}
+
+% Handle the yellow background
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+
+\begin{document}
+    \begin{tikzpicture}[
+           >=narrow, semithick,
+              plain/.style = {draw=none, fill=none, yshift=10mm,
+                text width=9ex,  align=center},% for text in images, 
+              ec/.style = {draw=none},% for emty cells
+               net/.style = {% for matrix style
+         matrix of nodes,
+          nodes={opacity=0.2,circle, draw, semithick, minimum size=5mm, inner sep=0mm},% circles in image
+       nodes in empty cells,% for not used cells in matrix
+       column sep = 4.5mm, % distance between columns in matrix 
+        row sep = -2mm  % distance between rows in matrix
+        },
+]
+\matrix[net] (m)% m is matrix name, it is used for names of cell: firs has name m-1-1
+                % in empty space between ampersands will show circles: 
+                % i.e.: nodes of the neural network
+{
+|[plain]|  &[-4mm] |[plain]|  &[-8mm] |[plain]| &[-4mm] |[plain]|  &[-8mm] |[plain]|  &[-5mm] |[plain]|   &[-8mm] |[plain]| \\ %
+       &        &        &         &        & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| &        & |[ec]|  &        & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| &        &        \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| &        & |[ec]|  &        & |[ec]| & |[ec]| \\
+       &        & |[ec]| &         & |[ec]| & |[ec]| & |[ec]| \\
+|[ec]| & |[ec]| & |[ec]| & |[ec]|  & |[ec]| & |[ec]| & |[ec]| \\
+%|[ec]| & |[ec]| &[-8mm] |[ec]| & |[ec]|  &[-8mm] |[ec]| & |[ec]| \\
+%|[ec]| & |[ec]| &[-8mm] |[ec]| & |[ec]|  &[-8mm] |[ec]| & |[ec]| \\
+};
+
+% inputs
+% \foreach \in [count=\ir from 1] in {3,5,7,9}
+% \draw[black,thick,<-] (m-\in-1.west) -- node[above] {\scriptsize{Input \ir}} +(-10mm,0);
+\draw[black,<-] (m-2-1.west) -- node[above] {\scriptsize{$\varphi_1$=\;age}} +(-13mm,0);
+\draw[gray,<-] (m-4-1.west) -- node[above] {\scriptsize{$\varphi_2$=\;weight}} +(-13mm,0);
+\draw[black,<-] (m-6-1.west) -- node[above] {\scriptsize{$\varphi_3$=\;BMI}} +(-13mm,0);
+\draw[gray,<-] (m-8-1.west) -- node[above] {\scriptsize{$\varphi_4$=\;gender}} +(-13mm,0);
+\draw[gray,<-] (m-10-1.west) -- node[above] {\scriptsize{$\varphi_5$=\;AV}} +(-13mm,0);
+
+% connections between nodes in the first and second layer
+\foreach \j in {2,4,6,8,10} {
+\foreach \k in {2,4,6,8,10} \draw[opacity=0.2,-] (m-\j-1) -- (m-\k-2); }
+
+\foreach \k in {2} \draw[black,-] (m-2-1) -- (m-\k-2);
+\foreach \k in {2} \draw[black,-] (m-6-1) -- (m-\k-2);
+
+% connections between nodes in the second and third layer (function layer)
+\draw[black,-] (m-2-2) -- (m-2-3); % unit
+\node[] at (m-2-3) {\scriptsize{$1$}};
+\draw[opacity=0.2,-] (m-4-2) -- (m-5-3); % mult
+\node[opacity=0.2,text height=2mm] at (m-5-3) {\scriptsize{$\times$}};
+\draw[opacity=0.2,-] (m-6-2) --  (m-5-3); % mult
+\draw[opacity=0.2,-] (m-8-2) --  (m-9-3) node[above, xshift=-4mm, yshift=1mm]{\scriptsize{$a$}}; % pwr
+\draw[opacity=0.2,-] (m-10-2) --  (m-9-3) node[below, xshift=-4mm, yshift=-1mm]{\scriptsize{$b$}}; % pwr
+\node[opacity=0.2] at (m-9-3) {\scriptsize{$a^b$}};
+
+% connections between nodes in the third and fourth layer
+\foreach \j in {2,5,9} {
+\foreach \k in {2,4,6,8,10} \draw[opacity=0.2,-] (m-\j-3) -- (m-\k-4); }
+
+\foreach \k in {8,10} \draw[black,-] (m-2-3) -- (m-\k-4);
+% \foreach \k in {2,4,6,8,10} \draw[black,-] (m-5-3) -- (m-\k-4);
+
+% connections between nodes in the fourth and fifth layer (function layer)
+\draw[opacity=0.2,-] (m-2-4) -- (m-2-5); % unit
+\node[opacity=0.2] at (m-2-5) {\scriptsize{$1$}};
+\draw[opacity=0.2,-] (m-4-4) -- (m-5-5); % mult
+\node[opacity=0.2,text height=2mm] at (m-5-5) {\scriptsize{$\times$}};
+\draw[opacity=0.2,-] (m-6-4) --  (m-5-5); % mult
+\draw[black,-] (m-8-4) --  (m-9-5) node[above, xshift=-4mm, yshift=1mm]{\scriptsize{$c$}}; % div
+\draw[black,-] (m-10-4) -- (m-9-5) node[below, xshift=-4mm, yshift=-1mm]{\scriptsize{$d$}}; % div
+\node[] at (m-9-5) {\scriptsize{$\frac{c}{d+1}$}};
+
+
+% connections between nodes in the fifth and last layer
+\foreach \j in {2,5,9}
+{
+\foreach \k in {6} \draw[opacity=0.2,-] (m-\j-5) -- (m-\k-6);
+}
+\draw[black,-] (m-9-5) -- (m-6-6); % unit
+
+% Last layer
+\draw[black,-] (m-6-6) -- (m-6-7) node[above, xshift=-5mm, yshift=0mm]{\scriptsize{$e$}};
+\node[] at (m-6-7) {\scriptsize{$|e|$}};
+
+% output
+\draw[black,->] (m-6-7.east) -- node[above]  {\scriptsize{$\theta_2=k_{12}$}} +(10mm,0);
+% Compute the coordinates for the background and the text above 
+% the background
+
+\coordinate(b1) at ($(m-10-5) + (9mm,-5mm)$);
+\coordinate(b2) at ($(m-1-4) + (-6mm,6mm)$);
+
+\coordinate(b3) at ($(m-10-3) + (9mm,-5mm)$);
+\coordinate(b4) at ($(m-1-2) + (-6mm,6mm)$);
+
+% Fill black circles
+\draw[black, semithick, inner sep=0mm] (m-2-1) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-6-1) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-10-1) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-2-2) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-4-2) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-6-2) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-8-2) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-10-2) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-2-3) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-5-3) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-9-3) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-2-4) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-4-4) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-6-4) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-8-4) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-10-4) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-2-5) circle (2.5mm);
+% \draw[black, semithick, inner sep=0mm] (m-5-5) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-9-5) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-6-6) circle (2.5mm);
+\draw[black, semithick, inner sep=0mm] (m-6-7) circle (2.5mm);
+
+\end{tikzpicture}
+
+\end{document}
