@@ -181,4 +181,5 @@ end
 # main(x, y, 2, opt, "MSE", seed, 10, 10)
 # main(x[1:10], y[1:10], 4, opt, "ALE", seed, n_epochs_init, n_epochs_prune)
 # main(x, y, 2, opt, "MdALE", seed, 1, 1)
+# main(x,y,1,opt,"ALE",seed,1000,1000) # this gives the main result
 
