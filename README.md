@@ -4,7 +4,22 @@ This repo contains code to replicate the results and figures in the paper "Learn
 
 We present a novel methodology for automatic and simultaneous covariate model structure discovery and parameter optimization. This model is demonstrated using an example of the anesthetic drug propofol. The final model outperforms state-of-the-art modeling, in that it finds expressions that match data slightly better, while relying on notably fewer covariates.
 
-## Main results - Covariate model from symbolic regression
+
+## Code examples
+
+### Get started
+Start by cloning the repo
+```
+git clone https://github.com/wahlquisty/learning-pharmacometric-covariate-structures.git
+```
+
+Install julia and instantiate the environment by running `julia` and in the Julia REPL, run:
+```julia 
+using Pkg
+Pkg.instantiate(".")
+```
+
+### Main results - Covariate model from symbolic regression
 
 To get the main results of the paper, run in the Julia REPL:
 
@@ -38,17 +53,17 @@ Writes to file for each thread "bson/nn_threadi.bson" with name `model`.
 ```
 
 
-## Models for comparison
+### Models for comparison
 In the paper, we use two non-covariate models for comparison to the symbolic regression model and the Eleveld model. These are: a PK model constant over the population and individual PK models over all individuals.
 
-### Constant PK model
+#### Constant PK model
 To optimize the constant PK model and get the resulting model and prediction errors, run
 
 ```julia
 include("optim/get_results_constantpk.jl")
 ```
 
-### Individual PK models
+#### Individual PK models
 Similarly, to optimize individual PK models and get the resulting prediction errors, run
 
 ```julia
@@ -78,5 +93,9 @@ where
 - $k_{ij}$ is the transfer rate from compartment $j$ to $i$.
 - $u(t)$ is the input
 - $V_1$ is the central compartment volume.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 
