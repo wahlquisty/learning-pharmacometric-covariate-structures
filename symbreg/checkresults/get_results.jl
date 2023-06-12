@@ -1,4 +1,5 @@
-# Get results from symbolic regression network
+# Get results from symbolic regression network files in bson/ folder
+
 # Date: 230414
 
 using Pkg
@@ -10,42 +11,28 @@ using Statistics, StatsPlots
 using Flux
 using BSON: @load
 
-include("../fcts/fcts_nn.jl")               # Function to generate symbolic regression network and network training
+include("../fcts/fcts_nn.jl")                  # Function to generate symbolic regression network and network training
 include("../fcts/get_elevelddata.jl")          # Functions to generate training data from Eleveld data set
-# include("../fcts/fcts_nn.jl")            # Function to generate symbolic regression network
-# include("fcts/fcts_train.jl")               # Functions for network training
 include("../fcts/fcts_eqreader.jl")            # Functions to read symbolic regression network into readable functions.
-include("../fcts/fcts_analyseresults.jl")            # Plotting functions
-# include("../fcts/fcts_predictionerrors.jl")    # Functions for prediction errors (MSE,ALE,MdALE etc)
+include("../fcts/fcts_analyseresults.jl")      # Plotting functions and prediction errors (MSE,ALE,MdALE etc)
 
-
+# Get training data
 x, y = get_elevelddata() # Get x and y data
 np = length(x)
 
+# Load bson file for final result
 @load "bson/bson_ALE/nn_thread1loss_ALE.bson" model # thread 1 & 3
-
-# @load "bson/bson_MSE/nn_thread5loss_MSE.bson" model # 4 and 5 are good.
-# model_MSE = deepcopy(model)
-# @load "bson/bson_ALE/nn_thread5loss_ALE.bson" model
 model_ALE = deepcopy(model)
 
-# Get predictions
-# tobs_MSE, ypred_MSE = getpredictions(model_MSE.nn, x, y) # Get predictions from nn
 tobs_ALE, ypred_ALE = getpredictions(model_ALE.nn, x, y) # Get predictions from nn
 
 # Get function expressions from network
-# func_exp_MSE = get_fctsfrommodel(model_MSE.nn) # Resulting (callable) functions for PK parameters in order [k10,k12,k13,k21,k31,V1]
 func_exp_ALE = get_fctsfrommodel(model_ALE.nn) # Resulting (callable) functions for PK parameters in order [k10,k12,k13,k21,k31,V1] (note, these are scaled t0 0->1)
-
-# tobs, yfunc_MSE = getpredictions(func_exp_MSE, x) # Check that equation reader is correct.
 tobs, yfunc_ALE = getpredictions(func_exp_ALE, x) # Check that equation reader is correct.
 
 
-
-# Errors
-
-# include("fcts/getoutput_eleveldmodel.jl") # Eleveld model on the data set
-θeleveld, y_eleveld, y_meas = get_predictions_eleveld()
+## Errors
+θeleveld, y_eleveld, y_meas = get_predictions_eleveld() # Eleveld predictions on the data set
 
 # Print final errors
 print("Costs for Eleveld model on data set: \n")
@@ -54,13 +41,6 @@ print("mean(MdALE): ", mean(MdALE.(y, y_eleveld)), "\n") # 0.3245
 print("mean(MdLE): ", mean(MdLE.(y, y_eleveld)), "\n") # 0.0791
 print("mean(MdAPE): ", mean(MdAPE.(y, y_eleveld)), "\n") # 34.78
 print("mean(MdPE): ", mean(MdPE.(y, y_eleveld)), "\n") # 14.4
-
-# print("Costs for Symbreg model with cost MSE on data set: \n")
-# print("mean(MSE): ", mean(MSE.(y, ypred_MSE)), "\n") # 2.552
-# print("mean(MdAPE): ", mean(MdAPE.(y, ypred_MSE)), "\n") # 35.37
-# print("mean(MdPE): ", mean(MdPE.(y, ypred_MSE)), "\n") # 3.577
-# print("mean(MdALE): ", mean(MdALE.(y, ypred_MSE)), "\n") # 0.345
-# print("mean(MdLE): ", mean(MdLE.(y, ypred_MSE)), "\n") # -0.043
 
 print("Costs for Symbreg model with cost ALE on data set: \n")
 # print("mean(MSE): ", mean(MSE.(y, ypred_ALE)), "\n") # 3.03
@@ -72,8 +52,7 @@ print("mean(MdPE): ", mean(MdPE.(y, ypred_ALE)), "\n") # -0.26
 
 ## Get readable expressions
 @syms x_age x_wgt x_bmi x_gdr x_AV # Symbolics, matches inputs.
-# expr_MSE = get_readableexpr(model_MSE.nn) # Prints readable expressions to terminal (note scaling!)
-expr_ALE = get_readableexpr(model_ALE.nn) # Prints readable (unscaled) expressions to terminal
+expr_ALE = get_readableexpr(model_ALE.nn) # Prints readable (unscaled!) expressions to terminal
 
 ##
 
@@ -103,7 +82,7 @@ end
 # print(expand(eval(Meta.parse(eqout[5]))))
 
 # Full expressions, scale inputs to normal
-# maxbmi = 52.84713965
+# max bmi = 52.84713965, max age = 88, max wgt = 160
 input = ["(x_age/88)"; "(x_wgt/160)"; "(x_bmi/52.84713965)"; "x_gdr"; "x_AV"] # scale inpute back to normal
 eqout, func_exp = get_true_equations(model_ALE, input)
 
@@ -128,7 +107,7 @@ print("Final k31 expression female: \n", eqout[5], "\n") # Final k31 expression 
 
 
 
-# ## Write results to file
+## Write results to file
 
 # errors
 # df_mdale = DataFrame("MdALE errors symbolic regression" => mdale, "MdALE errors Eleveld" => mdale_eleveld)

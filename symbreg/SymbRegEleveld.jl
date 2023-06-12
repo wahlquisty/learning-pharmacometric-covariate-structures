@@ -25,7 +25,6 @@ using BSON: @save                           # Format for saving Flux neural netw
 
 include("fcts/fcts_nn.jl")                  # Functions to generate and train symbolic regression network
 include("fcts/get_elevelddata.jl")          # Functions to generate training data from Eleveld data set
-# include("fcts/fcts_train.jl")               # Functions for network training
 include("fcts/fcts_flatstructure.jl")       # Functions to destructure (and rebuild) symbolic regression network to a flat structure for Hessian computations
 include("fcts/fcts_pruning.jl")             # Functions to prune inputs and parameters of symbolic regression network
 include("fcts/fcts_eqreader.jl")            # Functions to read symbolic regression network into readable functions.
@@ -42,9 +41,6 @@ x = x_all[1:1+np-1] # Training x data
 y = y_all[1:1+np-1] # Training y data
 
 opt = Flux.Adam(0.0001) # Optimizer with learning rate
-
-# nepochs_init = 1 #1000            # Nbr of epochs to train before pruning and during inputpruning
-# nepochs_prune = nepochs_init      # Nbr of epochs to train between parameter pruning steps
 
 
 """
