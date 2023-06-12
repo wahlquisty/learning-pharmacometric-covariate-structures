@@ -1,2 +1,2 @@
-# learning-pharmacometric-structures
-Code for paper "Learning pharmacometric model structures with symbolic regression"
+# learning-pharmacometric-covariate-structures
+Code for paper "Learning pharmacometric covariate model structures with symbolic regression"
